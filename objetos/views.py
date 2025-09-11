@@ -9,12 +9,14 @@ def dados_json_objeto(request, pk):
         objeto = Objeto.objects.get(pk=pk)
     except Objeto.DoesNotExist:
         raise Http404("Objeto não encontrado")
+    
+    image_url = request.build_absolute_uri(objeto.img_object.url) if objeto.img_object else None
 
     data = {
         "id": objeto.id,
         "name": objeto.name,
         "description": objeto.description,
-        "image": objeto.img_object.url if objeto.img_object else None,
+        "image": image_url,
         "user": objeto.user.username,
         "dt_object": objeto.dt_object.strftime("%Y-%m-%d"),
         "dt_create": objeto.dt_create.strftime("%Y-%m-%d %H:%M:%S"),
