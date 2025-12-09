@@ -14,6 +14,7 @@
     tailwind = window.tailwind || {}
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
   <!-- Carrega arquivos estáticos (ex.: fonts, ícones personalizados) -->
   <link rel="stylesheet" href="{% static 'global/css/style.css' %}" />
@@ -29,29 +30,95 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
   <!-- NAVBAR -->
-  <header class="bg-white shadow">
-    <div class="mx-auto px-4 sm:px-6 lg:px-8 content-max w-full flex items-center justify-between h-16">
+  <header class="bg-white border-b shadow-sm" x-data="{ open: false }">
+
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+
       <div class="flex items-center gap-4">
-        <a href="{% url 'home' %}" class="text-lg font-semibold">Registro de objetos</a>
+
+        <!-- Logo / Nome -->
+        <a href="{% url 'home' %}" class="text-xl font-semibold text-slate-800">
+          Gerenciador de objetos
+        </a>
+
+        <!-- MENU DESKTOP -->
         <nav class="hidden md:flex items-center gap-2 text-sm">
           <a href="{% url 'home' %}" class="px-3 py-2 rounded hover:bg-slate-100">Início</a>
           <a href="{% url 'about' %}" class="px-3 py-2 rounded hover:bg-slate-100">Sobre</a>
         </nav>
+
       </div>
 
-      <div class="flex items-center gap-3">
+      <!-- USUÁRIO (DESKTOP) -->
+      <div class="hidden md:flex items-center gap-3">
         {% if request.user.is_authenticated %}
           <span class="text-sm">Olá, {{ request.user.get_full_name|default:request.user.username }}</span>
           <form action="{% url 'logout' %}" method="post">
               {% csrf_token %}
-              <button class="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm" type="submit">Sair</button>
+              <button class="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm" type="submit">
+                Sair
+              </button>
           </form>
         {% else %}
-          <a href="{% url 'login' %}" class="px-3 py-2 bg-indigo-600 text-white rounded hover:opacity-95 text-sm">Entrar</a>
+          <a href="{% url 'login' %}" class="px-3 py-2 bg-indigo-600 text-white rounded hover:opacity-95 text-sm">
+            Entrar
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- BOTÃO HAMBÚRGUER (MOBILE) -->
+      <button 
+        @click="open = !open" 
+        class="md:hidden p-2 rounded hover:bg-slate-100"
+      >
+        <!-- Ícone hambúrguer -->
+        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+
+        <!-- Ícone X -->
+        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+    </div>
+
+    <!-- MENU MOBILE -->
+    <div 
+      class="md:hidden bg-white border-t shadow-sm"
+      x-show="open"
+      x-transition.duration.200ms
+    >
+      <nav class="flex flex-col p-4 text-sm space-y-2">
+        <a href="{% url 'home' %}" class="px-3 py-2 rounded hover:bg-slate-100">Início</a>
+        <a href="{% url 'about' %}" class="px-3 py-2 rounded hover:bg-slate-100">Sobre</a>
+      </nav>
+
+      <!-- USUÁRIO (MOBILE) -->
+      <div class="p-4 border-t flex flex-col gap-3 text-sm">
+        {% if request.user.is_authenticated %}
+          <span>Olá, {{ request.user.get_full_name|default:request.user.username }}</span>
+          <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button class="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm" type="submit">
+                Sair
+              </button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="px-3 py-2 bg-indigo-600 text-white rounded hover:opacity-95 text-sm">
+            Entrar
+          </a>
         {% endif %}
       </div>
     </div>
+
   </header>
+
 
   <!-- MESSAGES (Django messages framework) -->
   <div class="mx-auto px-4 sm:px-6 lg:px-8 w-full mt-6">
