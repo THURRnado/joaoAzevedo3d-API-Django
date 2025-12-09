@@ -1,0 +1,49 @@
+{% extends "global/base.html" %}
+
+{% block title %}Sobre{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-12">
+
+    <h1 class="text-3xl font-semibold text-slate-800 mb-4">
+        Sobre o Projeto
+    </h1>
+
+    <p class="text-slate-600 text-lg leading-relaxed">
+        Este projeto foi criado com o intuito de ajudar no controle e na adição de 
+        informações sobre os objetos que estarão expostos no Memorial de João Azevedo.  
+        Além disso, ele também servirá como uma API para que outros projetos 
+        possam utilizar esses dados de forma integrada, ampliando seu potencial de uso 
+        e facilitando futuras soluções que dependam dessas informações.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+
+        <!-- Card 1 -->
+        <div class="p-6 bg-white rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-2">Gestão de Informações</h2>
+            <p class="text-slate-600 mb-4">
+                Adicione, edite e organize dados sobre cada objeto presente no memorial.
+            </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6 bg-white rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-2">Integração com Aplicações</h2>
+            <p class="text-slate-600 mb-4">
+                Permite que outros projetos utilizem os dados centralizados deste sistema.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Desenvolvido por -->
+    <div class="mt-16 p-6 bg-white rounded-xl shadow border border-slate-200">
+        <h2 class="text-2xl font-semibold text-slate-800 mb-2">Desenvolvido por</h2>
+        <p class="text-slate-600 text-lg">
+            Arthur Vieira Toscano da Silva — Estudante de Ciência da Computação e desenvolvedor responsável pelo projeto.
+        </p>
+    </div>
+
+</div>
+{% endblock %}

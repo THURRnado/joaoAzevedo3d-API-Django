@@ -1,0 +1,101 @@
+{% extends "global/base.html" %}
+
+{% block title %}{{ objeto.name }}Detalhes{% endblock %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+
+    <!-- Header -->
+    <div class="bg-blue-600 text-white px-6 py-4">
+        <h1 class="text-2xl font-semibold">
+            {{ objeto.name }}
+        </h1>
+    </div>
+
+    <div class="p-6 space-y-6">
+
+        <!-- Imagem -->
+        {% if objeto.img_object %}
+            <div class="flex justify-center">
+                <img src="{{ objeto.img_object.url }}"
+                     alt="Imagem do objeto"
+                     class="max-h-80 rounded-lg shadow">
+            </div>
+        {% else %}
+            <p class="text-gray-500 italic text-center">
+                Nenhuma imagem disponível
+            </p>
+        {% endif %}
+
+        <!-- Descrição -->
+        <div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-1">Descrição</h2>
+            <p class="text-gray-800 whitespace-pre-line">
+                {{ objeto.description|default:"Sem descrição." }}
+            </p>
+        </div>
+
+        <!-- Data do Objeto -->
+        <div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-1">Data do Objeto</h2>
+            <p class="text-gray-800">
+                {% if objeto.dt_object %}
+                    {{ objeto.dt_object|date:"d/m/Y" }}
+                {% else %}
+                    <span class="text-gray-500 italic">Não informada</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Criado / Modificado -->
+        <div class="grid grid-cols-2 gap-4">
+
+            <div>
+                <h3 class="text-sm font-medium text-gray-600">Criado em</h3>
+                <p class="text-gray-700">
+                    {{ objeto.dt_create|date:"d/m/Y H:i" }}
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-medium text-gray-600">Última modificação</h3>
+                <p class="text-gray-700">
+                    {{ objeto.dt_modified|date:"d/m/Y H:i" }}
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Usuário responsável -->
+        <div>
+            <h3 class="text-sm font-medium text-gray-600">Usuário Responsável</h3>
+            <p class="text-gray-700">
+                {{ objeto.user.username }}
+            </p>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex justify-end gap-3 pt-4">
+
+            <a href="{% url 'editar_objeto' objeto.pk %}"
+               class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                Editar
+            </a>
+
+            <a href="{% url 'remover_objeto' objeto.pk %}"
+               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                Remover
+            </a>
+
+            <a href="{% url 'listar_objetos' %}"
+               class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                Voltar
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

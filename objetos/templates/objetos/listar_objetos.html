@@ -1,0 +1,97 @@
+{% extends "global/base.html" %}
+
+{% block title %}Objetos{% endblock %}
+
+{% block content %}
+
+<div class="max-w-6xl mx-auto mt-10">
+
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-semibold text-slate-800">
+            Lista de Objetos
+        </h1>
+
+        <a href="{% url 'adicionar_objeto' %}"
+           class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow hover:bg-indigo-700 transition">
+            + Adicionar Objeto
+        </a>
+    </div>
+
+    {% if objetos %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {% for obj in objetos %}
+            <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
+
+                <!-- Imagem -->
+                {% if obj.img_object %}
+                <img 
+                    src="{{ obj.img_object.url }}" 
+                    alt="{{ obj.name }}" 
+                    class="w-full h-40 object-cover rounded-lg mb-4"
+                >
+                {% else %}
+                <div class="w-full h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500">
+                    Sem imagem
+                </div>
+                {% endif %}
+
+                <!-- Nome -->
+                <h2 class="text-xl font-semibold text-slate-800">
+                    {{ obj.name }}
+                </h2>
+
+                <!-- Descrição -->
+                <p class="text-slate-600 text-sm mt-2 line-clamp-3">
+                    {{ obj.description|default:"Sem descrição" }}
+                </p>
+
+                <!-- Infos -->
+                <div class="text-xs text-slate-500 mt-3">
+                    Adicionado por: <span class="font-medium text-slate-700">{{ obj.user.username }}</span><br>
+                    Data do objeto: <span class="font-medium text-slate-700">{{ obj.dt_object|date:"d/m/Y" }}</span><br>
+                    Modificado em: <span class="font-medium text-slate-700">{{ obj.dt_modified|date:"d/m/Y" }}</span>
+                </div>
+
+                <!-- Botões (opcional) -->
+                <div class="flex justify-end mt-4 gap-2">
+                    <a href="{% url 'visualizar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Ver</a>
+                    <a href="{% url 'editar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600">Editar</a>
+                    <a href="{% url 'remover_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Remover
+                    </a>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+        <p class="text-slate-600 text-lg">Nenhum objeto cadastrado.</p>
+    {% endif %}
+
+    <!-- Paginação -->
+    {% if objetos.has_other_pages %}
+        <div class="flex justify-center mt-8 space-x-2">
+
+            {% if objetos.has_previous %}
+                <a href="?page={{ objetos.previous_page_number }}"
+                class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded hover:bg-slate-300">Anterior</a>
+            {% endif %}
+
+            <span class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded">
+                Página {{ objetos.number }} de {{ objetos.paginator.num_pages }}
+            </span>
+
+            {% if objetos.has_next %}
+                <a href="?page={{ objetos.next_page_number }}"
+                class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded hover:bg-slate-300">Próxima</a>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

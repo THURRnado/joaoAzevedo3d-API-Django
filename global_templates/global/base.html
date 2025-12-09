@@ -1,0 +1,98 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>{% block title %}Registro de objetos{% endblock %}</title>
+
+  <!-- ========== Tailwind CDN (rápido para desenvolvimento / protótipo) ========== -->
+  <!-- Remova/alterne para a solução de build em produção -->
+  <script>
+    // Pequena configuração do CDN: ativa plugins importantes se necessário
+    tailwind = window.tailwind || {}
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Carrega arquivos estáticos (ex.: fonts, ícones personalizados) -->
+  <link rel="stylesheet" href="{% static 'global/css/style.css' %}" />
+
+  {% block head_extra %}{% endblock %}
+  <style>
+    /* Exemplo de utilitário pequeno que pode estar aqui ou em main.css */
+    .content-max { max-width: 1100px; }
+  </style>
+
+  {% block css_extra %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <header class="bg-white shadow">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 content-max w-full flex items-center justify-between h-16">
+      <div class="flex items-center gap-4">
+        <a href="{% url 'home' %}" class="text-lg font-semibold">Registro de objetos</a>
+        <nav class="hidden md:flex items-center gap-2 text-sm">
+          <a href="{% url 'home' %}" class="px-3 py-2 rounded hover:bg-slate-100">Início</a>
+          <a href="{% url 'about' %}" class="px-3 py-2 rounded hover:bg-slate-100">Sobre</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-3">
+        {% if request.user.is_authenticated %}
+          <span class="text-sm">Olá, {{ request.user.get_full_name|default:request.user.username }}</span>
+          <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button class="px-3 py-2 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm" type="submit">Sair</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="px-3 py-2 bg-indigo-600 text-white rounded hover:opacity-95 text-sm">Entrar</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- MESSAGES (Django messages framework) -->
+  <div class="mx-auto px-4 sm:px-6 lg:px-8 w-full mt-6">
+    {% if messages %}
+      <div class="space-y-3">
+        {% for message in messages %}
+          <div class="
+            p-3 rounded-lg border 
+            {% if message.tags == 'success' %}
+              bg-green-100 text-green-800 border-green-300
+            {% elif message.tags == 'error' %}
+              bg-red-100 text-red-800 border-red-300
+            {% elif message.tags == 'warning' %}
+              bg-yellow-100 text-yellow-800 border-yellow-300
+            {% else %}
+              bg-gray-100 text-gray-800 border-gray-300
+            {% endif %}
+          ">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+
+  <!-- CONTAINER PRINCIPAL -->
+  <main class="flex-1 mx-auto px-4 sm:px-6 lg:px-8 w-full content-max py-8">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer class="bg-white border-t mt-8">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 content-max w-full py-6 text-sm text-slate-500 text-center">
+      <span>© 2025 Fundação Casa de José Américo</span>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS GERAIS -->
+  {% block scripts_extra %}{% endblock %}
+
+</body>
+</html>

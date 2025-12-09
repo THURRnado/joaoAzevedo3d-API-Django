@@ -1,0 +1,39 @@
+{% extends "global/base.html" %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-12">
+
+    <h1 class="text-3xl font-semibold text-slate-800 mb-4">
+        Bem-vindo ao Sistema
+    </h1>
+
+    <p class="text-slate-600 text-lg">
+        Este projeto é responsável pelo controle e cadastro dos objetos do memorial de João Azevedo.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
+
+        <!-- Card 1 -->
+        <div class="p-6 bg-white rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-2">Visualizar objetos cadastrados</h2>
+            <p class="text-slate-600 mb-4">
+                Funcionalidade responsável pelo controle dos objetos: visualização, edição, remoção, etc.
+            </p>
+            <a href="{% url 'listar_objetos' %}" class="text-indigo-600 font-medium hover:underline">Acessar →</a>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6 bg-white rounded-xl shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-2">Adicionar novo objeto</h2>
+            <p class="text-slate-600 mb-4">
+                Funcionalidade responsável pelo cadastro de novos objetos.
+            </p>
+            <a href="{% url 'adicionar_objeto' %}" class="text-indigo-600 font-medium hover:underline">Acessar →</a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
