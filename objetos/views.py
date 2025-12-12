@@ -1,11 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .models import Objeto
-from utils.exceptions import ServiceError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ObjetoForm
+from django.http import HttpResponse
 from django.core.paginator import Paginator
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+)
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.units import inch
 
 
 # Create your views here.
@@ -27,6 +34,74 @@ def dados_json_objeto(request, pk):
     }
 
     return JsonResponse(data, json_dumps_params={"ensure_ascii": False})
+
+
+@login_required
+def gerar_pdf_objetos(request):
+    try:
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="objetos.pdf"'
+
+        doc = SimpleDocTemplate(response, pagesize=A4)
+        story = []
+
+        styles = getSampleStyleSheet()
+        title_style = styles["Title"]
+        text_style = styles["Normal"]
+        bold_style = styles["Heading4"]
+
+        # Título
+        story.append(Paragraph("Objetos João Azevedo", title_style))
+        story.append(Spacer(1, 20))
+
+        # Loop dos objetos
+        for index, obj in enumerate(Objeto.objects.all()):
+            
+            # Alternância de cor (cinza leve e azul claro)
+            bg_color = colors.whitesmoke if index % 2 == 0 else colors.Color(0.85, 0.92, 1)
+
+            # Imagem
+            if obj.img_object:
+                img = Image(obj.img_object.path, width=1.5*inch, height=1.5*inch)
+            else:
+                img = Paragraph("<i>Sem imagem</i>", text_style)
+
+            # Dados do objeto (agora num único Paragraph para centralizar)
+            info = Paragraph(
+                f"""
+                <b>Nome:</b> {obj.name}<br/>
+                <b>Descrição:</b> {obj.description or '---'}<br/>
+                <b>Data do objeto:</b> {obj.dt_object.strftime('%d/%m/%Y') if obj.dt_object else '---'}
+                """,
+                text_style
+            )
+
+            # Tabela centralizada verticalmente
+            bloco = Table(
+                [[img, info]],
+                colWidths=[120, 400],
+                rowHeights=[120]  # ajuda a manter centro vertical
+            )
+
+            bloco.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), bg_color),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # <--- centralização vertical
+                ('LEFTPADDING', (0, 0), (-1, -1), 12),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+                ('TOPPADDING', (0, 0), (-1, -1), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ]))
+
+            story.append(bloco)
+            story.append(Spacer(1, 15))
+
+        doc.build(story)
+        return response
+
+    except Exception as e:
+        print(str(e))
+        messages.error(request, 'Ocorreu um erro ao gerar o PDF.')
+        return redirect('listar_objetos')
 
 
 @login_required

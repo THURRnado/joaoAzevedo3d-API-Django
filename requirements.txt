@@ -1,8 +1,10 @@
 asgiref==3.9.1
+charset-normalizer==3.4.4
 Django==5.2.5
 django-cors-headers==4.9.0
 dotenv==0.9.9
 pillow==11.3.0
 python-dotenv==1.1.1
+reportlab==4.4.6
 sqlparse==0.5.3
 tzdata==2025.2
