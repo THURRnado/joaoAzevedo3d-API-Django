@@ -149,16 +149,32 @@ def adicionar_objeto(request):
         return render(request, "objetos/form_objeto.html", {"form": form})
     except Exception as e:
         print(str(e))
-        messages.error(request, "Erro ao adicionar objeto. Tente novamente.")
+        messages.error(request, "Erro ao adicionar objeto. Tente novamente mais tarde.")
         return redirect("listar_objetos")
 
 
 @login_required
 def editar_objeto(request, pk):
-    objeto = get_object_or_404(Objeto, pk=pk)
-    form = ObjetoForm(request.POST or None, request.FILES or None, instance=objeto)
+    try:
+        objeto = get_object_or_404(Objeto, pk=pk)
 
-    return render(request, "objetos/form_objeto.html", {"form": form, "objeto": objeto})
+        if request.method == "POST":
+            form = ObjetoForm(request.POST, request.FILES, instance=objeto)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Informações do objeto editadas com sucesso.')
+                return redirect("listar_objetos")
+        else:
+            form = ObjetoForm(instance=objeto)
+
+        return render(request, "objetos/form_objeto.html", {
+            "form": form,
+            "objeto": objeto
+        })
+    except Exception as e:
+        print(str(e))
+        messages.error(request, "Erro ao editar objeto. Tente novamente mais tarde.")
+        return redirect("listar_objetos")
 
 
 @login_required
