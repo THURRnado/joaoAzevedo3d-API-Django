@@ -13,6 +13,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
+from datetime import datetime
 
 
 # Create your views here.
@@ -117,17 +118,46 @@ def about(request):
 @login_required
 def listar_objetos(request):
     try:
-        objetos_list = Objeto.objects.all().order_by('-dt_create')
-        paginator = Paginator(objetos_list, 9) 
+        objetos_list = Objeto.objects.all()
+
+        data_inicio = request.GET.get('data_inicio')
+        data_fim = request.GET.get('data_fim')
+
+        if data_inicio in (None, '', 'None'):
+            data_inicio = None
+
+        if data_fim in (None, '', 'None'):
+            data_fim = None
+
+        if data_inicio:
+            objetos_list = objetos_list.filter(dt_object__gte=data_inicio)
+
+        if data_fim:
+            objetos_list = objetos_list.filter(dt_object__lte=data_fim)
+
+        objetos_list = objetos_list.order_by('dt_object')
+
+        paginator = Paginator(objetos_list, 9)
         page_number = request.GET.get('page')
         objetos = paginator.get_page(page_number)
 
-        return render(request, 'objetos/listar_objetos.html', {'objetos': objetos})
+        return render(
+            request,
+            'objetos/listar_objetos.html',
+            {
+                'objetos': objetos,
+                'data_inicio': data_inicio,
+                'data_fim': data_fim,
+            }
+        )
 
     except Exception as e:
-        print(str(e))
-        messages.error(request, 'Ocorreu um erro. Não foi possível concluir essa operação, tente novamente mais tarde.')
-        return redirect("home")
+        print(e)
+        messages.error(
+            request,
+            'Ocorreu um erro ao filtrar os objetos.'
+        )
+        return redirect('home')
     
 
 @login_required

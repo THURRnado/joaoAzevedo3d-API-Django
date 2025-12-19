@@ -4,7 +4,8 @@ from django.urls import reverse
 # Create your models here.
 class Objeto(models.Model):
 
-    name = models.CharField(max_length=255, null=False, verbose_name="Nome do objeto")
+    name = models.CharField(max_length=255, null=False, unique=True, verbose_name="Nome do objeto")
+    id_objeto = models.CharField(max_length=50, null=True, blank=True, unique=True, verbose_name="ID do objeto")
     description = models.TextField(null=True, blank=True, verbose_name="Descrição")
     img_object = models.ImageField(upload_to='objetos/', null=True, blank=True, verbose_name="Descrição")
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, verbose_name="Usuário")

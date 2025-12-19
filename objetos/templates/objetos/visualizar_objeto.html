@@ -11,6 +11,16 @@
         <h1 class="text-2xl font-semibold">
             {{ objeto.name }}
         </h1>
+
+        <p class="text-sm text-blue-100 mt-1">
+            ID do objeto:
+            {% if objeto.id_objeto %}
+                <span class="font-medium">{{ objeto.id_objeto }}</span>
+            {% else %}
+                <span class="italic">Não informado</span>
+            {% endif %}
+        </p>
+
     </div>
 
     <div class="p-6 space-y-6">
