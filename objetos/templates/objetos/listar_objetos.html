@@ -26,29 +26,39 @@
 
     <form method="get" class="mb-6 flex flex-wrap gap-3 items-end">
 
-        <div>
-            <label class="block text-sm text-slate-600 mb-1">
-                Data inicial
-            </label>
-            <input
-                type="date"
-                name="data_inicio"
-                value="{{ data_inicio|default_if_none:'' }}"
-                class="px-3 py-2 border rounded-lg text-sm"
-            >
+        <div class="flex flex-col gap-3">
+
+            <p class="text-sm font-medium text-slate-700">
+                Filtrar por data do objeto
+            </p>
+
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm text-slate-600 mb-1">
+                        Data inicial
+                    </label>
+                    <input
+                        type="date"
+                        name="data_inicio"
+                        value="{{ data_inicio|default_if_none:'' }}"
+                        class="px-3 py-2 border rounded-lg text-sm w-full"
+                    >
+                </div>
+
+                <div class="flex-1">
+                    <label class="block text-sm text-slate-600 mb-1">
+                        Data final
+                    </label>
+                    <input
+                        type="date"
+                        name="data_fim"
+                        value="{{ data_fim|default_if_none:'' }}"
+                        class="px-3 py-2 border rounded-lg text-sm w-full"
+                    >
+                </div>
+            </div>
         </div>
 
-        <div>
-            <label class="block text-sm text-slate-600 mb-1">
-                Data final
-            </label>
-            <input
-                type="date"
-                name="data_fim"
-                value="{{ data_fim|default_if_none:'' }}"
-                class="px-3 py-2 border rounded-lg text-sm"
-            >
-        </div>
 
         <button
             type="submit"
@@ -71,48 +81,49 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
             {% for obj in objetos %}
-            <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
+                <div class="bg-white rounded-xl shadow border border-slate-200 p-5">
 
-                <!-- Imagem -->
-                {% if obj.img_object %}
-                <img 
-                    src="{{ obj.img_object.url }}" 
-                    alt="{{ obj.name }}" 
-                    class="w-full h-40 object-cover rounded-lg mb-4"
-                >
-                {% else %}
-                <div class="w-full h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500">
-                    Sem imagem
+                    <!-- Imagem -->
+                    {% if obj.img_object %}
+                    <img 
+                        src="{{ obj.img_object.url }}" 
+                        alt="{{ obj.name }}" 
+                        class="w-full h-40 object-cover rounded-lg mb-4"
+                    >
+                    {% else %}
+                    <div class="w-full h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500">
+                        Sem imagem
+                    </div>
+                    {% endif %}
+
+                    <!-- Nome -->
+                    <h2 class="text-xl font-semibold text-slate-800">
+                        {{ obj.name }}
+                    </h2>
+
+                    <!-- Descrição -->
+                    <p class="text-slate-600 text-sm mt-2 line-clamp-3">
+                        {{ obj.description|default:"Sem descrição" }}
+                    </p>
+
+                    <!-- Infos -->
+                    <div class="text-xs text-slate-500 mt-3">
+                        Adicionado por: <span class="font-medium text-slate-700">{{ obj.user.username }}</span><br>
+                        Data do objeto: <span class="font-medium text-slate-700">{{ obj.dt_object|date:"d/m/Y" }}</span><br>
+                        Modificado em: <span class="font-medium text-slate-700">{{ obj.dt_modified|date:"d/m/Y" }}</span>
+                    </div>
+
+                    <!-- Botões (opcional) -->
+                    <div class="flex justify-end mt-4 gap-2">
+                        <a href="{% url 'visualizar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Ver</a>
+                        {% if user.is_staff or obj.user == user %}
+                            <a href="{% url 'editar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600">Editar</a>
+                            <a href="{% url 'remover_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg 
+                            hover:bg-red-600">Remover</a>
+                        {% endif %}
+                    </div>
+
                 </div>
-                {% endif %}
-
-                <!-- Nome -->
-                <h2 class="text-xl font-semibold text-slate-800">
-                    {{ obj.name }}
-                </h2>
-
-                <!-- Descrição -->
-                <p class="text-slate-600 text-sm mt-2 line-clamp-3">
-                    {{ obj.description|default:"Sem descrição" }}
-                </p>
-
-                <!-- Infos -->
-                <div class="text-xs text-slate-500 mt-3">
-                    Adicionado por: <span class="font-medium text-slate-700">{{ obj.user.username }}</span><br>
-                    Data do objeto: <span class="font-medium text-slate-700">{{ obj.dt_object|date:"d/m/Y" }}</span><br>
-                    Modificado em: <span class="font-medium text-slate-700">{{ obj.dt_modified|date:"d/m/Y" }}</span>
-                </div>
-
-                <!-- Botões (opcional) -->
-                <div class="flex justify-end mt-4 gap-2">
-                    <a href="{% url 'visualizar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Ver</a>
-                    <a href="{% url 'editar_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600">Editar</a>
-                    <a href="{% url 'remover_objeto' obj.pk %}" class="px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600">
-                        Remover
-                    </a>
-                </div>
-
-            </div>
             {% endfor %}
 
         </div>

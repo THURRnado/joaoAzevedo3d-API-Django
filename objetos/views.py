@@ -16,6 +16,10 @@ from reportlab.lib.units import inch
 from datetime import datetime
 
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+
 # Create your views here.
 def dados_json_objeto(request, pk):
 
@@ -186,7 +190,14 @@ def adicionar_objeto(request):
 @login_required
 def editar_objeto(request, pk):
     try:
-        objeto = get_object_or_404(Objeto, pk=pk)
+        if is_admin(request.user):
+            objeto = get_object_or_404(Objeto, pk=pk)
+        else:
+            objeto = get_object_or_404(
+                Objeto,
+                pk=pk,
+                user=request.user
+            )
 
         if request.method == "POST":
             form = ObjetoForm(request.POST, request.FILES, instance=objeto)
@@ -209,17 +220,30 @@ def editar_objeto(request, pk):
 
 @login_required
 def remover_objeto(request, pk):
-    objeto = get_object_or_404(Objeto, pk=pk)
 
-    if request.method == "POST":
-        try:
-            objeto.delete()
-            messages.success(request, "Objeto removido com sucesso!")
-            return redirect("listar_objetos")
-        except Exception as e:
-            print(str(e))
-            messages.error(request, "Erro ao remover o objeto. Tente novamente.")
-            return redirect("listar_objetos")
+    try:
+        if is_admin(request.user):
+            objeto = get_object_or_404(Objeto, pk=pk)
+        else:
+            objeto = get_object_or_404(
+                    Objeto,
+                    pk=pk,
+                    user=request.user
+                )
 
-    # Caso o usuário tente acessar via GET, enviamos uma confirmação
-    return render(request, "objetos/confirmar_remocao.html", {"objeto": objeto})
+        if request.method == "POST":
+            try:
+                objeto.delete()
+                messages.success(request, "Objeto removido com sucesso!")
+                return redirect("listar_objetos")
+            except Exception as e:
+                print(str(e))
+                messages.error(request, "Erro ao remover o objeto. Tente novamente.")
+                return redirect("listar_objetos")
+
+        # Caso o usuário tente acessar via GET, enviamos uma confirmação
+        return render(request, "objetos/confirmar_remocao.html", {"objeto": objeto})
+    except Exception as e:
+        print(str(e))
+        messages.error(request, "Erro ao tentar remover objeto. Tente novamente mais tarde.")
+        return redirect("listar_objetos")
