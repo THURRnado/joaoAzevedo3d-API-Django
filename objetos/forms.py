@@ -41,7 +41,12 @@ class ObjetoForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data.get("name")
 
-        if Objeto.objects.filter(name__iexact=name).exists():
+        qs = Objeto.objects.filter(name__iexact=name)
+
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
             raise forms.ValidationError(
                 "Já existe um objeto cadastrado com esse nome."
             )
