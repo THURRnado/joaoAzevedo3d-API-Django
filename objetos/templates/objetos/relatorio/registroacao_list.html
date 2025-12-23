@@ -1,0 +1,80 @@
+{% extends "global/base.html" %}
+
+{% block title %}Relatório de Ações{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- TÍTULO -->
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-slate-800">
+      Relatório de Ações do Sistema
+    </h1>
+  </div>
+
+  <!-- TABELA -->
+  <div class="overflow-x-auto bg-white border rounded-lg shadow-sm">
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-slate-100 border-b">
+        <tr class="text-slate-700">
+          <th class="px-4 py-3 font-medium">Data / Hora</th>
+          <th class="px-4 py-3 font-medium">Usuário</th>
+          <th class="px-4 py-3 font-medium">Ação</th>
+          <th class="px-4 py-3 font-medium">Modelo</th>
+          <th class="px-4 py-3 font-medium">Objeto</th>
+          <th class="px-4 py-3 font-medium">Detalhes</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for registro in registros %}
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 whitespace-nowrap">
+              {{ registro.dt_create|date:"d/m/Y H:i" }}
+            </td>
+
+            <td class="px-4 py-3">
+              {{ registro.usuario.get_full_name|default:registro.usuario.username }}
+            </td>
+
+            <td class="px-4 py-3">
+              <span class="
+                px-2 py-1 rounded text-xs font-semibold
+                {% if registro.acao == 'CREATE' %}
+                  bg-green-100 text-green-700
+                {% elif registro.acao == 'UPDATE' %}
+                  bg-yellow-100 text-yellow-700
+                {% elif registro.acao == 'DELETE' %}
+                  bg-red-100 text-red-700
+                {% else %}
+                  bg-slate-100 text-slate-700
+                {% endif %}
+              ">
+                {{ registro.get_acao_display }}
+              </span>
+            </td>
+
+            <td class="px-4 py-3">
+              {{ registro.modelo }}
+            </td>
+
+            <td class="px-4 py-3">
+              ID {{ registro.id_objeto|default:"inexistente" }}
+            </td>
+
+            <td class="px-4 py-3 text-slate-600">
+              {{ registro.descricao|default:"—" }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="px-4 py-6 text-center text-slate-500">
+              Nenhuma ação registrada até o momento.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

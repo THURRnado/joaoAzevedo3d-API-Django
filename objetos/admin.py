@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Objeto
+from .models import Objeto, RegistroAcao
 from django.utils.html import format_html
 
 
@@ -45,3 +45,4 @@ class ObjetoAdmin(admin.ModelAdmin):
     image_preview.short_description = "Preview"
 
 
+admin.site.register(RegistroAcao)

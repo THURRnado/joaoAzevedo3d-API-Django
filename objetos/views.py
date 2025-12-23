@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Objeto
+from .models import Objeto, RegistroAcao
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ObjetoForm
@@ -111,12 +111,12 @@ def gerar_pdf_objetos(request):
 
 @login_required
 def home(request):
-    return render(request, 'objetos/home.html', {})
+    return render(request, 'objetos/principal/home.html', {})
 
 
 @login_required
 def about(request):
-    return render(request, 'objetos/about.html', {})
+    return render(request, 'objetos/principal/about.html', {})
 
 
 @login_required
@@ -147,7 +147,7 @@ def listar_objetos(request):
 
         return render(
             request,
-            'objetos/listar_objetos.html',
+            'objetos/dados/listar_objetos.html',
             {
                 'objetos': objetos,
                 'data_inicio': data_inicio,
@@ -167,7 +167,7 @@ def listar_objetos(request):
 @login_required
 def visualizar_objeto(request, pk):
     objeto = get_object_or_404(Objeto, pk=pk)
-    return render(request, "objetos/visualizar_objeto.html", {"objeto": objeto})
+    return render(request, "objetos/dados/visualizar_objeto.html", {"objeto": objeto})
     
 
 @login_required
@@ -180,7 +180,7 @@ def adicionar_objeto(request):
             obj.save()
             return redirect("listar_objetos")
 
-        return render(request, "objetos/form_objeto.html", {"form": form})
+        return render(request, "objetos/dados/form_objeto.html", {"form": form})
     except Exception as e:
         print(str(e))
         messages.error(request, "Erro ao adicionar objeto. Tente novamente mais tarde.")
@@ -208,7 +208,7 @@ def editar_objeto(request, pk):
         else:
             form = ObjetoForm(instance=objeto)
 
-        return render(request, "objetos/form_objeto.html", {
+        return render(request, "objetos/dados/form_objeto.html", {
             "form": form,
             "objeto": objeto
         })
@@ -242,8 +242,31 @@ def remover_objeto(request, pk):
                 return redirect("listar_objetos")
 
         # Caso o usuário tente acessar via GET, enviamos uma confirmação
-        return render(request, "objetos/confirmar_remocao.html", {"objeto": objeto})
+        return render(request, "objetos/dados/confirmar_remocao.html", {"objeto": objeto})
     except Exception as e:
         print(str(e))
         messages.error(request, "Erro ao tentar remover objeto. Tente novamente mais tarde.")
         return redirect("listar_objetos")
+    
+
+@login_required
+def relatorio_registros(request):
+    try:
+        total = RegistroAcao.objects.count()
+
+        if total > 100:
+            registros_antigos = (
+                RegistroAcao.objects
+                .order_by("dt_create")[:20]
+            )
+            registros_antigos.delete()
+
+        registros = RegistroAcao.objects.order_by("-dt_create")
+
+        return render(request, "objetos/relatorio/registroacao_list.html", {
+            "registros": registros
+        })
+    except Exception as e:
+        print(str(e))
+        messages.error(request, "Erro ao tentar visualizar relatório. Tente novamente mais tarde.")
+        return redirect("home")

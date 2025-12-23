@@ -13,6 +13,8 @@ urlpatterns = [
     path("objetos/<int:pk>/editar/", views.editar_objeto, name='editar_objeto'),
     path("objetos/<int:pk>/remover/", views.remover_objeto, name="remover_objeto"),
     path("objetos/pdf/", views.gerar_pdf_objetos, name="pdf_objetos"),
+
+    path("relatorio/", views.relatorio_registros, name="relatorio_registros"),
 ]
 
 if settings.DEBUG:
