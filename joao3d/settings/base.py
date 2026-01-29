@@ -16,6 +16,11 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+LOGS_DIR = BASE_DIR / 'logs'
+
+# Criar diretório se não existir
+if not LOGS_DIR.exists():
+    LOGS_DIR.mkdir(parents=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -126,3 +131,100 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+
+
+#=====================================================
+
+# CONFIGURAÇÕES DE LOGGING
+
+#=====================================================
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    
+    # Formatadores - como as mensagens de log vão aparecer
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} | {name} | {module}.{funcName}:{lineno} | {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '[{levelname}] {asctime} | {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    
+    # Handlers - para onde os logs vão
+    'handlers': {
+        # Console - aparece no terminal
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'level': 'INFO',
+        },
+        
+        # Arquivo geral da aplicação
+        'file_app': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'app.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 3,  # Mantém 5 arquivos de backup
+            'formatter': 'verbose',
+            'level': 'INFO',
+        },
+        
+        # Arquivo de erros
+        'file_errors': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'errors.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 3,
+            'formatter': 'verbose',
+            'level': 'ERROR',
+        },
+        
+        # Arquivo específico para a app objetos
+        'file_objetos': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'objetos.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5MB
+            'backupCount': 2,
+            'formatter': 'verbose',
+            'level': 'DEBUG',
+        },
+    },
+    
+    # Loggers - capturam logs de partes específicas do código
+    'loggers': {
+        # Logger para a app objetos
+        'objetos': {
+            'handlers': ['console', 'file_objetos', 'file_errors'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        
+        # Logger do Django (framework)
+        'django': {
+            'handlers': ['console', 'file_app', 'file_errors'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        
+        # Logger de requisições (útil para debug)
+        'django.request': {
+            'handlers': ['console', 'file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+    
+    # Logger raiz (captura tudo que não tem logger específico)
+    'root': {
+        'handlers': ['console', 'file_app', 'file_errors'],
+        'level': 'INFO',
+    },
+}

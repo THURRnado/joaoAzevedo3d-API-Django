@@ -15,3 +15,10 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
+
+# Em produção, menos verboso no console
+LOGGING['handlers']['console']['level'] = 'WARNING'
+LOGGING['handlers']['console']['formatter'] = 'simple'
+
+# Nível menos verboso para a app objetos
+LOGGING['loggers']['objetos']['level'] = 'INFO'

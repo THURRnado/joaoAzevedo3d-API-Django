@@ -5,3 +5,8 @@ venv/
 migrations/
 media/*
 dump.json
+
+# Logs
+logs/
+*.log
+*.log.*
