@@ -3,7 +3,7 @@ import os
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '192.168.0.42']
+ALLOWED_HOSTS = ['localhost', '192.168.1.71']
 
 DATABASES = {
     "default": {
